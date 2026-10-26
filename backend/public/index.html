@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QAWIM</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 420px; margin: 4rem auto; padding: 0 1rem; color: #1a1a1a; }
+    h1 { font-size: 1.6rem; margin-bottom: 0.25rem; }
+    p.lead { color: #555; margin-top: 0; }
+    .tabs { display: flex; gap: 0.5rem; margin: 1.5rem 0 1rem; }
+    .tabs button { flex: 1; padding: 0.5rem; border: 1px solid #ccc; background: #fff; cursor: pointer; }
+    .tabs button.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+    form { display: grid; gap: 0.75rem; }
+    label { display: grid; gap: 0.25rem; font-size: 0.9rem; }
+    input { padding: 0.5rem; font-size: 1rem; border: 1px solid #ccc; border-radius: 4px; }
+    button.submit { padding: 0.6rem; font-size: 1rem; background: #1a1a1a; color: #fff; border: 0; border-radius: 4px; cursor: pointer; }
+    #message { margin-top: 1rem; min-height: 1.2rem; font-size: 0.9rem; }
+    #message.error { color: #b00020; }
+    #message.ok { color: #1b5e20; }
+    #account { display: none; margin-top: 1.5rem; }
+  </style>
+</head>
+<body>
+  <h1>QAWIM</h1>
+  <p class="lead">Understand where you stand and move forward, one step at a time.</p>
+
+  <section id="auth">
+    <div class="tabs">
+      <button id="tab-login" class="active" type="button">Log in</button>
+      <button id="tab-register" type="button">Register</button>
+    </div>
+
+    <form id="login-form">
+      <label>Email <input name="email" type="email" required autocomplete="email" /></label>
+      <label>Password <input name="password" type="password" required minlength="8" autocomplete="current-password" /></label>
+      <button class="submit" type="submit">Log in</button>
+    </form>
+
+    <form id="register-form" hidden>
+      <label>Full name <input name="name" type="text" required autocomplete="name" /></label>
+      <label>Email <input name="email" type="email" required autocomplete="email" /></label>
+      <label>Password <input name="password" type="password" required minlength="8" autocomplete="new-password" /></label>
+      <button class="submit" type="submit">Create account</button>
+    </form>
+
+    <div id="message" role="status"></div>
+  </section>
+
+  <section id="account">
+    <h2>Welcome, <span id="account-name"></span></h2>
+    <p id="account-email"></p>
+    <button id="logout" type="button">Log out</button>
+  </section>
+
+  <script>
+    const API = '/api/auth';
+    const $ = (id) => document.getElementById(id);
+    const message = (text, kind) => { $('message').textContent = text; $('message').className = kind || ''; };
+
+    function showTab(name) {
+      const login = name === 'login';
+      $('login-form').hidden = !login;
+      $('register-form').hidden = login;
+      $('tab-login').classList.toggle('active', login);
+      $('tab-register').classList.toggle('active', !login);
+      message('');
+    }
+    $('tab-login').onclick = () => showTab('login');
+    $('tab-register').onclick = () => showTab('register');
+
+    async function post(path, body) {
+      const res = await fetch(API + path, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(body),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.message || 'Request failed');
+      return data;
+    }
+
+    function showAccount(user) {
+      $('auth').hidden = true;
+      $('account').style.display = 'block';
+      $('account-name').textContent = user.name;
+      $('account-email').textContent = user.email;
+    }
+
+    $('login-form').onsubmit = async (e) => {
+      e.preventDefault();
+      const f = new FormData(e.target);
+      try {
+        const data = await post('/sign-in/email', { email: f.get('email'), password: f.get('password') });
+        showAccount(data.user);
+      } catch (err) {
+        message(err.message, 'error');
+      }
+    };
+
+    $('register-form').onsubmit = async (e) => {
+      e.preventDefault();
+      const f = new FormData(e.target);
+      try {
+        const data = await post('/sign-up/email', { name: f.get('name'), email: f.get('email'), password: f.get('password') });
+        showAccount(data.user);
+      } catch (err) {
+        message(err.message, 'error');
+      }
+    };
+
+    $('logout').onclick = async () => {
+      await post('/sign-out', {});
+      location.reload();
+    };
+
+    fetch(API + '/get-session', { credentials: 'include' })
+      .then((r) => r.json())
+      .then((s) => { if (s && s.user) showAccount(s.user); })
+      .catch(() => {});
+  </script>
+</body>
+</html>

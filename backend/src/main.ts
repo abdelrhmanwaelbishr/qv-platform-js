@@ -10,7 +10,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.use('/api/auth', toNodeHandler(auth));
   app.useStaticAssets(join(__dirname, '..', 'public'));
-  app.setGlobalPrefix('api/v1', { exclude: ['api/auth/(.*)'] });
+  app.setGlobalPrefix('api/v1', { exclude: ['api/auth/{*path}'] });
   app.enableCors({
     origin: (process.env.ALLOWED_ORIGINS ?? 'http://localhost:5173,http://127.0.0.1:5173').split(','),
     credentials: true,

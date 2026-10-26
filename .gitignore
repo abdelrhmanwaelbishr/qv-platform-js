@@ -7,3 +7,5 @@ coverage/
 .DS_Store
 .neon
 .env.local
+backend/*.tsbuildinfo
+*.tsbuildinfo

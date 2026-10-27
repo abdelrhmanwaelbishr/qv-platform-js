@@ -163,6 +163,17 @@ Set these in Vercel under Project → Settings → Environment Variables:
 | `BETTER_AUTH_SECRET` | all | 32+ random characters |
 | `BETTER_AUTH_URL` | Production | Public origin, e.g. `https://qawim.example.com`. Leave it unset in Preview/Development: the app falls back to `VERCEL_URL`, so every preview keeps its own session origin |
 | `ALLOWED_ORIGINS` | optional | Comma-separated extra CORS origins. Vercel's deployment hostnames and localhost (outside production) are added automatically |
+| `NODE_PATH` | all | `/var/task/backend/node_modules:/var/task/node_modules` — required, see [Vercel services workarounds](#vercel-services-workarounds) |
+| `NODE_OPTIONS` | all | `--experimental-require-module` — required, see [Vercel services workarounds](#vercel-services-workarounds) |
+
+### Vercel services workarounds
+
+Both variables exist because of how Vercel builds a Node service whose root is a subdirectory. They are not needed locally.
+
+- `NODE_PATH`: the services builder traces `node_modules` relative to the repository root, so the deployed bundle puts packages in `/var/task/backend/node_modules` while the handler is `/var/task/main.js`. Node never searches that path on its own, and the function dies on its first import (`Cannot find module 'dotenv/config'`). `NODE_PATH` points the runtime at the directory the packages actually land in.
+- `NODE_OPTIONS=--experimental-require-module`: NestJS 12 ships ESM-only packages (`@nestjs/core` has `"type": "module"`), while `nest build` emits CommonJS that `require()`s them. AWS Lambda disables the interop by default, so the function crashes with `ERR_REQUIRE_ESM`. The flag restores Node's default behaviour ([Vercel docs](https://vercel.com/docs/functions/runtimes/node-js/advanced-node-configuration#experimental-node.js-require-of-es-module)).
+
+If Vercel ever fixes service dependency tracing, `NODE_PATH` can be dropped; a missing path in `NODE_PATH` is ignored, so keeping it is harmless.
 
 `DIRECT_URL` is only for migrations; the deployed app never reads it. Apply migrations before the first deploy (from `backend/`, against the direct URL):
 

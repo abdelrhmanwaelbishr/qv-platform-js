@@ -17,7 +17,7 @@ export function SiteHeader() {
       <nav aria-label="Main" className="flex items-center gap-2 sm:gap-5">
         <a
           href="/#how-it-works"
-          className="hidden text-sm text-muted transition-colors hover:text-ink sm:inline"
+          className="hidden py-2 text-sm text-muted transition-colors hover:text-ink sm:inline"
         >
           How it works
         </a>
@@ -26,7 +26,7 @@ export function SiteHeader() {
           <>
             <Link
               to="/app"
-              className="text-sm text-ink transition-colors hover:text-pine"
+              className="py-2 text-sm text-ink transition-colors hover:text-pine"
             >
               Your logbook
             </Link>
@@ -38,7 +38,7 @@ export function SiteHeader() {
           <>
             <Link
               to="/sign-in"
-              className="px-2 text-sm text-ink transition-colors hover:text-pine"
+              className="px-2 py-2 text-sm text-ink transition-colors hover:text-pine"
             >
               Sign in
             </Link>

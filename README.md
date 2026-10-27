@@ -88,16 +88,17 @@ The server listens on `http://127.0.0.1:8000`:
 qv-platform-js/
 ├── backend/
 │   ├── prisma/             # Prisma schema and migrations (Neon Postgres)
-│   ├── public/             # Landing page served at /
+│   ├── public/             # Plain HTML fallback served at / by Nest
 │   ├── src/
-│   │   ├── auth/           # Better Auth config and Neon Auth JWT verifier
+│   │   ├── auth/           # Better Auth config, origins, Neon Auth JWT verifier
 │   │   ├── health/         # Health check (database ping)
 │   │   ├── prisma/         # Global Prisma service
 │   │   ├── users/          # User profile module
 │   │   ├── app.module.ts
 │   │   └── main.ts         # Bootstrap: static files, Better Auth, /api/v1 prefix
 │   └── test/               # End-to-end tests (run against a live server)
-├── docker-compose.yml      # Optional local Postgres
+├── frontend/               # React app (Vite, React Router, Tailwind, shadcn/ui)
+├── vercel.json             # Two services: backend at /api/*, frontend for the rest
 └── neon.ts                 # Neon services declaration (postgres, auth)
 ```
 
@@ -135,6 +136,48 @@ The `npm test` script is wired to Jest, but there are no Jest specs yet.
 ```bash
 cd backend
 npm run build
+```
+
+## Deploy on Vercel
+
+`vercel.json` at the repo root deploys both halves as one project with two [services](https://vercel.com/docs/services):
+
+| Service | Root | Framework | Receives |
+|---|---|---|---|
+| `backend` | `backend` | `nestjs` | `/api/*` |
+| `frontend` | `frontend` | `vite` | every other path |
+
+Services receive the original request path, so `/api/auth/*` (Better Auth) and `/api/v1/*` (Nest) need no rewrites or prefix changes. The frontend calls the API with relative URLs and Vite's dev proxy is not involved in production — **do not set `VITE_API_URL` on Vercel**, or requests leave the origin and the session cookie stops being sent.
+
+The frontend service has its own catch-all rewrite to `/index.html` so client-side routes (`/sign-in`, `/app`) survive a reload.
+
+No service bindings are declared, because no service calls another from the server: the frontend is a static SPA, so its API calls come from the browser through the public `/api` route. A binding only injects a URL into another service's server-side code (Vercel Functions), which this project does not have.
+
+### Environment variables
+
+Set these in Vercel under Project → Settings → Environment Variables:
+
+| Variable | Environments | Notes |
+|---|---|---|
+| `DATABASE_URL` | all | Pooled Neon connection string |
+| `BETTER_AUTH_SECRET` | all | 32+ random characters |
+| `BETTER_AUTH_URL` | Production | Public origin, e.g. `https://qawim.example.com`. Leave it unset in Preview/Development: the app falls back to `VERCEL_URL`, so every preview keeps its own session origin |
+| `ALLOWED_ORIGINS` | optional | Comma-separated extra CORS origins. Vercel's deployment hostnames and localhost (outside production) are added automatically |
+
+`DIRECT_URL` is only for migrations; the deployed app never reads it. Apply migrations before the first deploy (from `backend/`, against the direct URL):
+
+```bash
+npx prisma migrate deploy
+```
+
+`backend/.env` is excluded from CLI uploads by `.vercelignore`. Vercel's own environment variables take precedence over it if it is ever present.
+
+On Vercel, `/` is the React app — `backend/public/index.html` is only what you see when hitting the Nest server directly (for example at `http://127.0.0.1:8000` during local development).
+
+To run the same setup locally, use the CLI, which starts every service and applies the top-level rewrites on `http://localhost:3000`:
+
+```bash
+npx vercel dev --local
 ```
 
 ## Roadmap

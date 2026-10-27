@@ -27,6 +27,11 @@ All API calls live in `src/lib/api.ts`. The backend answers in snake_case
 (`full_name`, `is_active`, `created_at`); the client type mirrors that and the
 UI reads those fields directly.
 
+On Vercel the two halves are one project (see the root `vercel.json`): `/api/*`
+routes to the NestJS service and everything else to this one. Keep using
+relative URLs there too — setting `VITE_API_URL` would send requests off-origin
+and drop the session cookie.
+
 ## Routes
 
 | Path | Page | Notes |

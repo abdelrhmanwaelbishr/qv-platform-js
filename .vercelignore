@@ -1,0 +1,12 @@
+# Keep local secrets and build output out of CLI uploads (`vercel deploy`).
+# Vercel respects this file, not .gitignore, when it packages the repository.
+.env
+.env.local
+**/.env
+**/.env.local
+**/node_modules
+**/dist
+**/*.tsbuildinfo
+.playwright-mcp
+.neon
+.vercel

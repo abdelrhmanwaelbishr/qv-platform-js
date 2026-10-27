@@ -55,3 +55,16 @@ Run all app commands from `backend/`. The repo-root `package.json` only holds Ne
 - Routes: `/`, `/sign-in`, `/sign-up`, `/app` (protected). API calls are centralised in `src/lib/api.ts`; `src/lib/auth-context.tsx` owns the session.
 - shadcn/ui components live in `src/components/ui/`; Tailwind 4 has no config file, tokens are in the `@theme` block of `src/index.css`.
 - The visual system is a surveyor's logbook: one left axis with measure ticks and a brass plumb bob, hairline rules instead of cards, Bitter + Archivo. See `frontend/README.md` before adding sections.
+
+## Deployment (Vercel services)
+
+- `vercel.json` at the repo root declares two services: `backend` (`backend/`, `nestjs`, public at `/api/*`) and `frontend` (`frontend/`, `vite`, public for everything else). Both run as separate builds in one project.
+- Services receive the original request path (`/api/v1/users/me` arrives unchanged), so Nest's `api/v1` prefix and Better Auth's `/api/auth` base path stay as they are. Do not add a path prefix in the service config.
+- There are deliberately no `bindings`. A binding only injects a URL into another service's server-side code, and the frontend is a static SPA whose API calls come from the browser through the public `/api` route. Add one only if a function (not the SPA) starts calling another service.
+- `frontend` owns a catch-all rewrite to `/index.html`; without it, deep links like `/sign-in` 404 in production.
+- `backend/src/auth/origins.ts` is the single source for CORS origins, Better Auth `trustedOrigins`, and the base URL. It adds Vercel's deployment hostnames automatically, so previews need no extra config, and it trusts localhost (ports 5173 and 3000) everywhere except a production deployment. Set `BETTER_AUTH_URL` only for Production with a custom domain; previews fall back to `VERCEL_URL`.
+- Never set `VITE_API_URL` on Vercel. The frontend must keep calling the API with relative URLs or the session cookie leaves the origin.
+- `DIRECT_URL` is migration-only and is not needed by the deployed app. `.vercelignore` keeps `.env` files and `.vercel/` out of CLI uploads.
+- Vercel imports `src/main.ts` and captures the HTTP server that `app.listen()` creates, so startup must stay fast: bootstrap has a one-second budget. `PrismaService` therefore connects lazily on the first query instead of in `onModuleInit` (Neon wake-ups would exceed the budget).
+- Nest DI uses explicit `@Inject(...)` tokens. Vercel's dev loader does not emit `design:paramtypes`, so implicit constructor injection silently yields `undefined` dependencies even though `nest build` works.
+- Verify the deployment setup locally with `npx vercel dev --local` (serves both services on `http://localhost:3000`). The backend there runs through the function runtime, not `npm run dev`, so `devCommand` is neither needed nor used for routing.

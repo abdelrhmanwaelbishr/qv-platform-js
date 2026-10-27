@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Req, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Patch, Req, UnauthorizedException } from '@nestjs/common';
 import type { Request } from 'express';
 import { auth } from '../auth/auth';
 import { UsersService } from './users.service';
@@ -10,7 +10,7 @@ interface UpdateMeBody {
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly users: UsersService) {}
+  constructor(@Inject(UsersService) private readonly users: UsersService) {}
 
   @Get('me')
   async me(@Req() req: Request) {

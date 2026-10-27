@@ -5,6 +5,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { toNodeHandler } from 'better-auth/node';
 import { AppModule } from './app.module';
 import { auth } from './auth/auth';
+import { allowedOrigins } from './auth/origins';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -12,10 +13,14 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setGlobalPrefix('api/v1', { exclude: ['api/auth/{*path}'] });
   app.enableCors({
-    origin: (process.env.ALLOWED_ORIGINS ?? 'http://localhost:5173,http://127.0.0.1:5173').split(','),
+    origin: allowedOrigins(),
     credentials: true,
   });
-  await app.listen(Number(process.env.PORT ?? 8000), process.env.HOST ?? '127.0.0.1');
+
+  // Vercel runs the app as a Function and forwards traffic to the injected
+  // port, so the server has to accept connections on all interfaces there.
+  const host = process.env.HOST ?? (process.env.VERCEL ? '0.0.0.0' : '127.0.0.1');
+  await app.listen(Number(process.env.PORT ?? 8000), host);
 }
 
 bootstrap();

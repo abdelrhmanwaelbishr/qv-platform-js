@@ -62,10 +62,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
       },
     })
   } catch {
-    throw new ApiError(
-      'Could not reach QAWIM. Is the backend running on port 8000?',
-      0,
-    )
+    throw new ApiError('Could not reach the QAWIM API.', 0)
   }
 
   const text = await response.text()

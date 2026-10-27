@@ -10,3 +10,4 @@ coverage/
 backend/*.tsbuildinfo
 *.tsbuildinfo
 opencode.json
+.vercel

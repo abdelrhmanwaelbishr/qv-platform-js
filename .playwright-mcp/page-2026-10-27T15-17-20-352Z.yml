@@ -1,0 +1,79 @@
+- generic [ref=f5e2]:
+  - generic [ref=f5e4]:
+    - banner [ref=f5e5]:
+      - link "QAWIM" [ref=f5e6] [cursor=pointer]:
+        - /url: /
+      - navigation "Main" [ref=f5e7]:
+        - link "Start" [ref=f5e8] [cursor=pointer]:
+          - /url: /sign-up
+    - generic [ref=f5e9]:
+      - heading "Know where you stand." [level=1] [ref=f5e10]
+      - paragraph [ref=f5e11]: "QAWIM is a quiet, structured way to take stock of your life: what you carry, where you are stuck, and the next honest step. No streak counters and no cheerleading."
+      - generic [ref=f5e12]:
+        - link "Start with an honest look" [ref=f5e13] [cursor=pointer]:
+          - /url: /sign-up
+        - link "Sign in" [ref=f5e14] [cursor=pointer]:
+          - /url: /sign-in
+      - paragraph [ref=f5e15]: Early release. Accounts, the four questions and your profile are live. Activity logging is still being ported from the Python backend.
+    - generic [ref=f5e16]:
+      - heading "Four questions, asked in order." [level=2] [ref=f5e17]
+      - paragraph [ref=f5e18]: Most plans fail because they begin at the last question, how. QAWIM begins with what is actually there.
+      - list [ref=f5e19]:
+        - listitem [ref=f5e20]:
+          - generic [ref=f5e21]: "01"
+          - heading "Who you are" [level=3] [ref=f5e22]
+          - paragraph [ref=f5e23]: Not a personality quiz. A record of what you have actually done, kept long enough to show a pattern instead of a mood.
+        - listitem [ref=f5e24]:
+          - generic [ref=f5e25]: "02"
+          - heading "Where you stand" [level=3] [ref=f5e26]
+          - paragraph [ref=f5e27]: You describe the problem in your own words. QAWIM asks the questions that turn a vague ache into something you can work on.
+        - listitem [ref=f5e28]:
+          - generic [ref=f5e29]: "03"
+          - heading "What you want" [level=3] [ref=f5e30]
+          - paragraph [ref=f5e31]: Goals small enough to start this week, with success criteria you can check rather than guess at.
+        - listitem [ref=f5e32]:
+          - generic [ref=f5e33]: "04"
+          - heading "How you move" [level=3] [ref=f5e34]
+          - paragraph [ref=f5e35]: Every step gets written down. What worked and what did not changes the next step, not the whole plan.
+    - generic [ref=f5e37]:
+      - generic [ref=f5e38]:
+        - heading "A page from someone’s week." [level=2] [ref=f5e39]
+        - paragraph [ref=f5e40]: An entry is a few sentences and one decision. Written by hand, read once a week, kept for the pattern it makes.
+      - figure [ref=f5e41]:
+        - generic [ref=f5e42]:
+          - generic [ref=f5e43]: Tuesday, 12 March
+          - generic [ref=f5e44]: Entry 214
+        - generic [ref=f5e45]:
+          - generic [ref=f5e46]:
+            - term [ref=f5e47]: logged
+            - definition [ref=f5e48]: Walked to the market instead of driving. Half an hour each way, and the money question sorted itself out on the walk home.
+          - generic [ref=f5e49]:
+            - term [ref=f5e50]: noticed
+            - definition [ref=f5e51]: The problem is not the money. It is that I decide at nine in the evening, when I have nothing left to decide with.
+          - generic [ref=f5e52]:
+            - term [ref=f5e53]: next
+            - definition [ref=f5e54]: Move the weekly money decision to Sunday morning. Ten minutes, coffee, no phone.
+        - generic [ref=f5e55]: Tried it the following Sunday. It held.
+    - generic [ref=f5e59]:
+      - paragraph [ref=f5e60]: One realistic step at a time.
+      - paragraph [ref=f5e61]: Ambitious plans tend to die in the third week. A logbook survives because the next step is always small enough to do tonight, and specific enough to know whether it happened.
+  - contentinfo [ref=f5e62]:
+    - generic [ref=f5e64]:
+      - generic [ref=f5e65]:
+        - paragraph [ref=f5e66]: Start where you are.
+        - paragraph [ref=f5e67]: Write the first entry tonight. Ten minutes, in plain words. It is the only part that has to be honest.
+        - generic [ref=f5e68]:
+          - link "Create your logbook" [ref=f5e69] [cursor=pointer]:
+            - /url: /sign-up
+          - link "I already keep one" [ref=f5e70] [cursor=pointer]:
+            - /url: /sign-in
+      - generic [ref=f5e71]:
+        - paragraph [ref=f5e72]: QAWIM takes its name from قويم, upright — the thing a plumb line checks.
+        - navigation "Footer" [ref=f5e73]:
+          - link "How it works" [ref=f5e74] [cursor=pointer]:
+            - /url: /#how-it-works
+          - link "Sign in" [ref=f5e75] [cursor=pointer]:
+            - /url: /sign-in
+          - link "Start" [ref=f5e76] [cursor=pointer]:
+            - /url: /sign-up
+        - paragraph [ref=f5e77]: © 2026 QAWIM

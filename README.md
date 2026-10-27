@@ -2,7 +2,7 @@
 
 **قاوم · QAWIM** is a personal development platform. It helps people understand who they are, where they stand, what they want, and how to move toward it, one realistic step at a time.
 
-This repository is the TypeScript rewrite of the Python backend (`qv-platform`). It uses NestJS, Prisma, and PostgreSQL on Neon, with a React frontend to follow.
+This repository is the TypeScript rewrite of the Python backend (`qv-platform`). It uses NestJS, Prisma, and PostgreSQL on Neon. The web client in `frontend/` is React with Vite, React Router, Tailwind, and shadcn/ui.
 
 > **Status:** Early port. Authentication, the user module, and the health check are working. The QAWIM domains are being ported from the Python backend in order. See [Roadmap](#roadmap).
 
@@ -13,7 +13,8 @@ This repository is the TypeScript rewrite of the Python backend (`qv-platform`).
 | Health check | Working | `GET /api/v1/health` |
 | Accounts (Better Auth) | Working | `POST /api/auth/sign-up/email`, `POST /api/auth/sign-in/email`, `POST /api/auth/sign-out`, `GET /api/auth/get-session` |
 | User profile | Working | `GET /api/v1/users/me`, `PATCH /api/v1/users/me` |
-| Landing page | Working | `GET /` (login and register) |
+| Landing page | Working | `GET /` (plain HTML fallback inside the backend) |
+| Web app (`frontend/`) | Working | Landing page, sign in, sign up, protected logbook at `/app` |
 | Neon Auth JWT verification | Library only | Not yet wired to a route |
 | QAWIM activities, logs, onboarding, goals, success paths, problems, context packages | Not yet ported | See the Python backend |
 
@@ -147,7 +148,7 @@ The port follows the Python backend's domain order:
 5. Success paths
 6. Problems
 7. Context packages and the scoring engine
-8. React frontend with Tailwind and React Router
+8. React frontend: the rest of the QAWIM screens (see `frontend/README.md`)
 
 Known bugs to fix during the port: the onboarding loop, the success-paths endpoint mismatch, and the orphaned onboarding routes.
 

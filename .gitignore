@@ -9,3 +9,4 @@ coverage/
 .env.local
 backend/*.tsbuildinfo
 *.tsbuildinfo
+opencode.json

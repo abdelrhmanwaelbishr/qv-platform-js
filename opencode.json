@@ -1,32 +1,46 @@
 {
-	"$schema": "https://opencode.ai/config.json",
-	"provider": {
-		"sovereigneg": {
-			"npm": "@ai-sdk/openai-compatible",
-			"name": "SovereignEG",
-			"options": {
-				"baseURL": "https://backend.sovereigneg.com/v1"
-			},
-			"models": {
-				"SovereignEG/Qwen3.8-27B-FP8": {
-					"name": "Qwen3.8 27B (Egypt)"
-				},
-				"claude-opus-5.5": {
-					"name": "Claude Opus 5.5"
-				},
-				"claude-sonnet-5.5": {
-					"name": "Claude Sonnet 5.5"
-				},
-				"gemini-4-argon": {
-					"name": "Gemini 4 Argon"
-				},
-				"claude-haiku-5.5": {
-					"name": "Claude Haiku 5.5"
-				},
-				"deepseek-v4.1-flash-1017": {
-					"name": "deepseek-v4.1-flash-1017"
-				}
-			}
-		}
-	}
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "sovereigneg": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "SovereignEG",
+      "options": {
+        "baseURL": "https://backend.sovereigneg.com/v1"
+      },
+      "models": {
+        "SovereignEG/Qwen3.8-27B-FP8": {
+          "name": "Qwen3.8 27B (Egypt)"
+        },
+        "claude-opus-5.5": {
+          "name": "Claude Opus 5.5"
+        },
+        "claude-sonnet-5.5": {
+          "name": "Claude Sonnet 5.5"
+        },
+        "gemini-4-argon": {
+          "name": "Gemini 4 Argon"
+        },
+        "claude-haiku-5.5": {
+          "name": "Claude Haiku 5.5"
+        },
+        "deepseek-v4.1-flash-1017": {
+          "name": "deepseek-v4.1-flash-1017"
+        }
+      }
+    }
+  },
+  "mcp": {
+    "playwright": {
+      "type": "local",
+      "command": [
+        "npx",
+        "@playwright/mcp@latest",
+        "--executable-path",
+        "C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
+        "--user-data-dir",
+        "C:\\Users\\Abdelrhman\\AppData\\Local\\BraveSoftware\\Brave-Browser\\User Data"
+      ],
+      "enabled": true
+    }
+  }
 }

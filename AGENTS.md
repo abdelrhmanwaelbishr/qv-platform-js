@@ -1,6 +1,6 @@
 # AGENTS.md
 
-QAWIM (`qv-platform-js`) is the TypeScript port of the Python `qv-platform` backend: NestJS + Prisma + Neon Postgres. Application code lives in `backend/`; the React frontend has not been started.
+QAWIM (`qv-platform-js`) is the TypeScript port of the Python `qv-platform` backend: NestJS + Prisma + Neon Postgres. Backend application code lives in `backend/`; the React frontend lives in `frontend/` (Vite, React Router, Tailwind 4, shadcn/ui).
 
 ## Commands
 
@@ -47,3 +47,11 @@ Run all app commands from `backend/`. The repo-root `package.json` only holds Ne
 - Known bugs to fix during the port: the onboarding loop, the success-paths endpoint mismatch, and the orphaned onboarding routes.
 - Port order: auth/user gaps → activities and logs → onboarding → goals → success paths → problems → context packages/scoring → React frontend.
 - `neon.ts` at the repo root declares Neon services and branch policy; the root dependencies exist only for the Neon CLI.
+
+## Frontend (`frontend/`)
+
+- `npm install`, then `npm run dev` on `http://localhost:5173`; `npm run build` runs `tsc` then `vite build`.
+- Backend must run on `127.0.0.1:8000`. Vite proxies `/api` to it so Better Auth's `SameSite=Lax` cookie works on one origin — keep requests relative, and use `VITE_API_URL` only for split deployments.
+- Routes: `/`, `/sign-in`, `/sign-up`, `/app` (protected). API calls are centralised in `src/lib/api.ts`; `src/lib/auth-context.tsx` owns the session.
+- shadcn/ui components live in `src/components/ui/`; Tailwind 4 has no config file, tokens are in the `@theme` block of `src/index.css`.
+- The visual system is a surveyor's logbook: one left axis with measure ticks and a brass plumb bob, hairline rules instead of cards, Bitter + Archivo. See `frontend/README.md` before adding sections.

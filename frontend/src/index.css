@@ -1,0 +1,188 @@
+@import "tailwindcss";
+
+/*
+  QAWIM — design tokens
+  A surveyor's logbook: mineral paper, pine ink, brass for the one moving part.
+*/
+@theme {
+  --font-sans: "Archivo", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Bitter", Georgia, "Times New Roman", serif;
+
+  --color-paper: #e3e7e2;
+  --color-paper-raised: #eef1ec;
+  --color-paper-quiet: #d9dfd8;
+  --color-ink: #14201c;
+  --color-ink-soft: #1d2b26;
+  --color-pine: #204a3f;
+  --color-pine-deep: #17362e;
+  --color-brass: #b4883c;
+  --color-brass-deep: #82601f;
+  --color-muted: #4f5c53;
+  --color-rule: #c3cbc1;
+  --color-rule-strong: #a8b3a8;
+
+  /* shadcn/ui semantic tokens */
+  --color-background: #e3e7e2;
+  --color-foreground: #14201c;
+  --color-primary: #204a3f;
+  --color-primary-foreground: #eef1ec;
+  --color-secondary: #d6dbd3;
+  --color-secondary-foreground: #14201c;
+  --color-accent: #b4883c;
+  --color-accent-foreground: #14201c;
+  --color-muted-foreground: #4f5c53;
+  --color-border: #c3cbc1;
+  --color-input: #a8b3a8;
+  --color-ring: #204a3f;
+  --color-destructive: #8c2f24;
+  --color-destructive-foreground: #f6efec;
+
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
+  --radius-xl: 4px;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Printed-paper grain: barely there, but it keeps the surface from reading as flat UI. */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0.055;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  ::selection {
+    background-color: #dfcfa6;
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-pine);
+    outline-offset: 2px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+}
+
+/*
+  The one axis the whole page hangs from: a hairline with measure ticks in the
+  margin, ending in a brass plumb bob that settles once on load.
+*/
+.tick-rail {
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--color-rule-strong) 80%, transparent) 0 1px,
+      transparent 1px 10px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      var(--color-rule-strong) 0 1px,
+      transparent 1px 70px
+    );
+  background-size:
+    7px 100%,
+    15px 100%;
+  background-position:
+    left top,
+    left top;
+  background-repeat: repeat-y;
+}
+
+.plumb-bob {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 13px;
+  height: 31px;
+  background-color: var(--color-brass);
+  clip-path: polygon(50% 100%, 100% 0, 0 0);
+  transform-origin: 50% 0;
+  animation: plumb-settle 1500ms cubic-bezier(0.22, 0.9, 0.28, 1) 250ms both;
+}
+
+.plumb-bob::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 3.5px;
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-brass-deep);
+}
+
+@keyframes plumb-settle {
+  0% {
+    transform: translateX(-50%) translateY(-22px) rotate(-5deg);
+    opacity: 0;
+  }
+  40% {
+    transform: translateX(-50%) translateY(0) rotate(3deg);
+    opacity: 1;
+  }
+  62% {
+    transform: translateX(-50%) rotate(-1.7deg);
+  }
+  80% {
+    transform: translateX(-50%) rotate(0.8deg);
+  }
+  100% {
+    transform: translateX(-50%) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* Content rises into place once, in reading order, and never again. */
+.reveal {
+  animation: reveal 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .plumb-bob {
+    animation: none;
+    transform: translateX(-50%);
+  }
+
+  .reveal {
+    animation: none;
+  }
+}

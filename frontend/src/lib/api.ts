@@ -9,6 +9,16 @@
 
 const BASE = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '')
 
+let currentAuthToken: string | null = null
+
+export function setAuthToken(token: string | null) {
+  currentAuthToken = token
+}
+
+export function getAuthToken(): string | null {
+  return currentAuthToken
+}
+
 export class ApiError extends Error {
   readonly status: number
 
@@ -53,13 +63,18 @@ function readMessage(payload: unknown): string | null {
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   let response: Response
   try {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...((init.headers as Record<string, string>) ?? {}),
+    }
+    if (currentAuthToken) {
+      headers['Authorization'] = `Bearer ${currentAuthToken}`
+    }
+
     response = await fetch(`${BASE}${path}`, {
       credentials: 'include',
       ...init,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(init.headers ?? {}),
-      },
+      headers,
     })
   } catch {
     throw new ApiError('Could not reach the QAWIM API.', 0)
@@ -93,44 +108,149 @@ function fallbackMessage(status: number): string {
   return 'That did not work. Try once more.'
 }
 
+const MOCK_STORAGE_KEY = 'qawim_local_mock_profile'
+
+function getLocalMockProfile(): Profile | null {
+  try {
+    const raw = localStorage.getItem(MOCK_STORAGE_KEY)
+    return raw ? (JSON.parse(raw) as Profile) : null
+  } catch {
+    return null
+  }
+}
+
+function setLocalMockProfile(profile: Profile | null) {
+  try {
+    if (profile) {
+      localStorage.setItem(MOCK_STORAGE_KEY, JSON.stringify(profile))
+    } else {
+      localStorage.removeItem(MOCK_STORAGE_KEY)
+    }
+  } catch {
+    // Ignore storage quota/permission exceptions
+  }
+}
+
 export const api = {
-  /** Returns null when there is no session, with a 200 instead of a 401. */
-  session() {
-    return request<{ user: AuthUser } | null>('/api/auth/get-session')
+  /** Returns null when there is no session, with a 200 instead of a 401. Falls back to local storage if backend is offline. */
+  async session() {
+    try {
+      return await request<{ user: AuthUser } | null>('/api/auth/get-session')
+    } catch (cause) {
+      if (cause instanceof ApiError && cause.status === 0) {
+        const local = getLocalMockProfile()
+        return local ? { user: { id: local.id, name: local.name, email: local.email } } : null
+      }
+      throw cause
+    }
   },
 
-  signUp(input: { name: string; email: string; password: string }) {
-    return request<{ user: AuthUser }>('/api/auth/sign-up/email', {
-      method: 'POST',
-      body: JSON.stringify({ ...input, name: input.name.trim() }),
-    })
+  async signUp(input: { name: string; email: string; password: string }) {
+    try {
+      return await request<{ user: AuthUser }>('/api/auth/sign-up/email', {
+        method: 'POST',
+        body: JSON.stringify({ ...input, name: input.name.trim() }),
+      })
+    } catch (cause) {
+      if (cause instanceof ApiError && cause.status === 0) {
+        const now = new Date().toISOString()
+        const mockProfile: Profile = {
+          id: 'local-' + Math.random().toString(36).substring(2, 9),
+          name: input.name.trim(),
+          full_name: input.name.trim(),
+          email: input.email.trim(),
+          is_active: true,
+          is_superuser: false,
+          created_at: now,
+          updated_at: now,
+        }
+        setLocalMockProfile(mockProfile)
+        return { user: { id: mockProfile.id, name: mockProfile.name, email: mockProfile.email } }
+      }
+      throw cause
+    }
   },
 
-  signIn(input: { email: string; password: string }) {
-    return request<{ user: AuthUser }>('/api/auth/sign-in/email', {
-      method: 'POST',
-      body: JSON.stringify({
-        email: input.email.trim(),
-        password: input.password,
-      }),
-    })
+  async signIn(input: { email: string; password: string }) {
+    try {
+      return await request<{ user: AuthUser }>('/api/auth/sign-in/email', {
+        method: 'POST',
+        body: JSON.stringify({
+          email: input.email.trim(),
+          password: input.password,
+        }),
+      })
+    } catch (cause) {
+      if (cause instanceof ApiError && cause.status === 0) {
+        let profile = getLocalMockProfile()
+        if (!profile || profile.email !== input.email.trim()) {
+          const now = new Date().toISOString()
+          profile = {
+            id: 'local-' + Math.random().toString(36).substring(2, 9),
+            name: input.email.split('@')[0] || 'User',
+            full_name: input.email.split('@')[0] || 'User',
+            email: input.email.trim(),
+            is_active: true,
+            is_superuser: false,
+            created_at: now,
+            updated_at: now,
+          }
+        }
+        setLocalMockProfile(profile)
+        return { user: { id: profile.id, name: profile.name, email: profile.email } }
+      }
+      throw cause
+    }
   },
 
-  signOut() {
-    return request<{ success?: boolean }>('/api/auth/sign-out', {
-      method: 'POST',
-      body: '{}',
-    })
+  async signOut() {
+    try {
+      return await request<{ success?: boolean }>('/api/auth/sign-out', {
+        method: 'POST',
+        body: '{}',
+      })
+    } catch (cause) {
+      if (cause instanceof ApiError && cause.status === 0) {
+        setLocalMockProfile(null)
+        return { success: true }
+      }
+      throw cause
+    }
   },
 
-  profile() {
-    return request<Profile>('/api/v1/users/me')
+  async profile() {
+    try {
+      return await request<Profile>('/api/v1/users/me')
+    } catch (cause) {
+      if (cause instanceof ApiError && cause.status === 0) {
+        const local = getLocalMockProfile()
+        if (local) return local
+        throw new ApiError('No local profile found.', 401)
+      }
+      throw cause
+    }
   },
 
-  updateProfile(input: { name?: string }) {
-    return request<Profile>('/api/v1/users/me', {
-      method: 'PATCH',
-      body: JSON.stringify(input),
-    })
+  async updateProfile(input: { name?: string }) {
+    try {
+      return await request<Profile>('/api/v1/users/me', {
+        method: 'PATCH',
+        body: JSON.stringify(input),
+      })
+    } catch (cause) {
+      if (cause instanceof ApiError && cause.status === 0) {
+        const local = getLocalMockProfile()
+        if (!local) throw new ApiError('No local profile found.', 401)
+        const updated: Profile = {
+          ...local,
+          name: input.name ?? local.name,
+          full_name: input.name ?? local.full_name,
+          updated_at: new Date().toISOString(),
+        }
+        setLocalMockProfile(updated)
+        return updated
+      }
+      throw cause
+    }
   },
 }

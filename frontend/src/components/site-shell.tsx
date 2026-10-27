@@ -21,14 +21,14 @@ export function SiteShell({
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-y-0 left-4 w-px bg-rule-strong/70 sm:left-8"
+        className="pointer-events-none absolute inset-y-0 left-4 w-px bg-gradient-to-b from-emerald-500/30 via-white/10 to-emerald-500/10 sm:left-8"
       />
       <div className="relative pl-7 sm:pl-11 md:pl-20">{children}</div>
     </div>
   )
 }
 
-/** The hero's measuring ticks and the brass bob that settles at the end of them. */
+/** The hero's measuring ticks and the luminous emerald plumb bob that settles at the end of them. */
 export function MeasureAxis({ className }: { className?: string }) {
   return (
     <div
@@ -38,7 +38,7 @@ export function MeasureAxis({ className }: { className?: string }) {
         className,
       )}
     >
-      <div className="tick-rail absolute inset-y-0 left-0 w-full" />
+      <div className="tick-rail absolute inset-y-0 left-0 w-full opacity-70" />
       <div className="plumb-bob" />
     </div>
   )

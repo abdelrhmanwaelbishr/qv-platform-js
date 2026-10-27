@@ -1,0 +1,162 @@
+rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// This security rules file assumes the following data structures:
+//
+// Collection: users/{userId}
+// Document ID: userId (must match request.auth.uid)
+// Fields:
+//   - id: string (required, 1-128 chars, must equal userId and request.auth.uid, immutable on update)
+//   - name: string (required, 1-100 chars)
+//   - full_name: string or null (optional, 0-100 chars if string)
+//   - email: string (required, 0-254 chars, valid email format or empty, immutable on update)
+//   - is_active: bool (required, immutable on update by client)
+//   - is_superuser: bool (required, must be false on client create, immutable on update)
+//   - created_at: string (required, 10-40 chars, ISO 8601 string, immutable on update)
+//   - updated_at: string (required, 10-40 chars, ISO 8601 string)
+//
+// Access Patterns:
+//   - Read: Authenticated users can only read their own document (request.auth.uid == userId)
+//   - Create: Authenticated user creating their own document with strict validation
+//   - Update: Authenticated user updating their own document; immutable fields locked down
+//   - Delete: Denied for all client callers
+//   - All other collections: Denied by default
+//
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    // Check if the user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Check if user owns the document path
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Check if caller has admin or superuser custom claim
+    function isAdmin() {
+      return isAuthenticated() &&
+        (request.auth.token.get('admin', false) == true ||
+         request.auth.token.get('superuser', false) == true ||
+         request.auth.token.get('is_superuser', false) == true);
+    }
+
+    // Validate required fields exist in map
+    function hasRequiredFields(data, fields) {
+      return data.keys().hasAll(fields);
+    }
+
+    // Validate only allowed fields exist in map
+    function hasOnlyAllowedFields(data, fields) {
+      return data.keys().hasOnly(fields);
+    }
+
+    // Validate that immutable fields have not been modified on update
+    function areImmutableFieldsUnchanged(fields) {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(fields);
+    }
+
+    // Validate email format
+    function isValidEmail(email) {
+      return email is string &&
+        email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    // Validate ISO 8601 date string format (YYYY-MM-DDTHH:MM:SS)
+    function isValidDateString(dateStr) {
+      return dateStr is string &&
+        dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*Z?$");
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    // Validates core schema and field boundaries for a user document
+    function isValidUser(data, userId) {
+      return hasRequiredFields(data, ['id', 'name', 'email', 'is_active', 'is_superuser', 'created_at', 'updated_at']) &&
+        hasOnlyAllowedFields(data, ['id', 'name', 'full_name', 'email', 'is_active', 'is_superuser', 'created_at', 'updated_at']) &&
+        data.id is string &&
+        data.id == userId &&
+        data.id == request.auth.uid &&
+        data.id.size() >= 1 &&
+        data.id.size() <= 128 &&
+        data.name is string &&
+        data.name.size() >= 1 &&
+        data.name.size() <= 100 &&
+        (!('full_name' in data) || data.full_name == null || (data.full_name is string && data.full_name.size() <= 100)) &&
+        data.email is string &&
+        data.email.size() <= 254 &&
+        (data.email.size() == 0 || isValidEmail(data.email)) &&
+        data.is_active is bool &&
+        data.is_superuser is bool &&
+        data.created_at is string &&
+        data.created_at.size() >= 10 &&
+        data.created_at.size() <= 40 &&
+        isValidDateString(data.created_at) &&
+        data.updated_at is string &&
+        data.updated_at.size() >= 10 &&
+        data.updated_at.size() <= 40 &&
+        isValidDateString(data.updated_at);
+    }
+
+    // Additional validations specific to document creation
+    function isValidUserCreate(userId) {
+      return isValidUser(request.resource.data, userId) &&
+        // Prevent privilege escalation: non-admin clients cannot grant themselves superuser status
+        (request.resource.data.is_superuser == false || isAdmin());
+    }
+
+    // Additional validations specific to document updates
+    function isValidUserUpdate(userId) {
+      return isValidUser(request.resource.data, userId) &&
+        // Deactivated users cannot modify documents
+        resource.data.is_active == true &&
+        // Verify immutable fields remain unchanged
+        request.resource.data.id == resource.data.id &&
+        request.resource.data.created_at == resource.data.created_at &&
+        request.resource.data.is_superuser == resource.data.is_superuser &&
+        request.resource.data.email == resource.data.email &&
+        request.resource.data.is_active == resource.data.is_active &&
+        areImmutableFieldsUnchanged(['id', 'created_at', 'is_superuser', 'email', 'is_active']);
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
+
+    // Users collection
+    match /users/{userId} {
+      // Only the document owner can read their own user record
+      allow read: if isOwner(userId);
+
+      // Authenticated users can create their own document with valid schema
+      allow create: if isOwner(userId) && isValidUserCreate(userId);
+
+      // Authenticated users can update their own document with valid schema and immutable field locks
+      allow update: if isOwner(userId) && isValidUserUpdate(userId);
+
+      // Deletions through client SDK are disallowed
+      allow delete: if false;
+    }
+
+    // ===============================================================
+    // Default Deny Rule
+    // ===============================================================
+    // Lock down all other collections and subcollections by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

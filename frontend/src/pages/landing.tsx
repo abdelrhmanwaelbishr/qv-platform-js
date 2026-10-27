@@ -34,17 +34,28 @@ export function LandingPage() {
         <SiteHeader />
 
         <main>
-          <section className="relative pb-20 pt-14 sm:pb-24 sm:pt-20">
+          <section className="relative pb-20 pt-16 sm:pb-28 sm:pt-24">
             <MeasureAxis />
-            <h1 className="reveal max-w-[15ch] font-display text-[clamp(2.75rem,9vw,6rem)] font-medium leading-[0.95] tracking-[-0.035em]">
-              Know where you stand.
+
+            <div className="reveal inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-xs font-medium text-emerald-300 backdrop-blur-md">
+              <span className="size-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse" />
+              <span>A quiet way to take stock</span>
+            </div>
+
+            <h1 className="reveal mt-6 max-w-[15ch] font-display text-[clamp(2.75rem,8vw,5.5rem)] font-bold leading-[0.98] tracking-[-0.035em] text-foreground">
+              Know where you{' '}
+              <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200 bg-clip-text text-transparent">
+                stand.
+              </span>
             </h1>
-            <p className="reveal mt-8 max-w-[56ch] text-[1.0625rem] leading-[1.65] text-muted [animation-delay:120ms]">
+
+            <p className="reveal mt-7 max-w-[56ch] text-[1.125rem] leading-[1.7] text-ink-soft [animation-delay:120ms]">
               QAWIM is a quiet, structured way to take stock of your life: what
               you carry, where you are stuck, and the next honest step. No streak
               counters and no cheerleading.
             </p>
-            <div className="reveal mt-10 flex flex-wrap items-center gap-3 [animation-delay:200ms]">
+
+            <div className="reveal mt-9 flex flex-wrap items-center gap-3.5 [animation-delay:200ms]">
               <Button asChild size="lg">
                 <Link to={signedIn ? '/app' : '/sign-up'}>
                   {signedIn ? 'Open your logbook' : 'Start with an honest look'}
@@ -60,66 +71,79 @@ export function LandingPage() {
                 </Button>
               )}
             </div>
-            <p className="reveal mt-10 max-w-[46ch] border-t border-rule pt-5 text-sm leading-relaxed text-muted [animation-delay:280ms]">
-              Early release. Accounts, the four questions and your profile are
-              live. Activity logging is still being ported from the Python
-              backend.
-            </p>
+
+            <div className="reveal mt-12 max-w-[48ch] rounded-xl border border-white/10 bg-white/[0.02] p-4 text-xs leading-relaxed text-muted-foreground backdrop-blur-sm [animation-delay:280ms]">
+              <span className="font-semibold text-emerald-400">Early release:</span>{' '}
+              Accounts, the four core questions, and your profile are live.
+              Activity logging is actively porting over.
+            </div>
           </section>
 
           <section
             id="how-it-works"
-            className="scroll-mt-8 border-t border-rule py-16 sm:py-20"
+            className="scroll-mt-12 border-t border-white/10 py-16 sm:py-24"
           >
-            <h2 className="max-w-[22ch] font-display text-[clamp(1.65rem,4vw,2.6rem)] font-medium leading-[1.1] tracking-[-0.03em]">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1 text-xs font-medium text-emerald-400 backdrop-blur-md">
+              Process
+            </div>
+            <h2 className="mt-4 max-w-[22ch] font-display text-[clamp(1.75rem,4vw,2.75rem)] font-bold leading-[1.1] tracking-[-0.03em] text-foreground">
               Four questions, asked in order.
             </h2>
-            <p className="mt-4 max-w-[56ch] leading-relaxed text-muted">
-              Most plans fail because they begin at the last question, how. QAWIM
-              begins with what is actually there.
+            <p className="mt-4 max-w-[56ch] leading-relaxed text-ink-soft">
+              Most plans fail because they begin at the last question: <em>how</em>.
+              QAWIM begins with what is actually there.
             </p>
 
-            <ol className="mt-12 border-t border-rule">
+            <div className="mt-12 grid gap-4 sm:grid-cols-2">
               {questions.map((question, index) => (
-                <li
+                <div
                   key={question.title}
-                  className="grid gap-2 border-b border-rule py-7 last:border-b-0 md:grid-cols-[2.5rem_13rem_1fr] md:items-baseline md:gap-8"
+                  className="glass-panel group relative flex flex-col justify-between rounded-2xl p-6 transition-all duration-300 hover:border-emerald-500/30 hover:bg-white/[0.05] sm:p-7"
                 >
-                  <span className="font-display text-sm tabular-nums text-brass-deep">
-                    {String(index + 1).padStart(2, '0')}
-                  </span>
-                  <h3 className="font-display text-xl font-medium tracking-[-0.02em]">
-                    {question.title}
-                  </h3>
-                  <p className="max-w-[58ch] leading-[1.7] text-muted">
-                    {question.body}
-                  </p>
-                </li>
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="inline-flex size-8 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/10 font-mono text-xs font-semibold text-emerald-300">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                    </div>
+                    <h3 className="mt-5 font-display text-xl font-semibold tracking-[-0.02em] text-foreground">
+                      {question.title}
+                    </h3>
+                    <p className="mt-3 text-sm leading-[1.7] text-ink-soft">
+                      {question.body}
+                    </p>
+                  </div>
+                </div>
               ))}
-            </ol>
+            </div>
           </section>
 
-          <section className="border-t border-rule py-16 sm:py-20">
+          <section className="border-t border-white/10 py-16 sm:py-24">
             <div className="grid gap-12 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:gap-16">
               <div className="lg:pt-2">
-                <h2 className="max-w-[16ch] font-display text-[clamp(1.65rem,3.4vw,2.25rem)] font-medium leading-[1.1] tracking-[-0.03em]">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1 text-xs font-medium text-emerald-400 backdrop-blur-md">
+                  Real rhythm
+                </div>
+                <h2 className="mt-4 max-w-[16ch] font-display text-[clamp(1.75rem,3.4vw,2.35rem)] font-bold leading-[1.1] tracking-[-0.03em] text-foreground">
                   A page from someone&rsquo;s week.
                 </h2>
-                <p className="mt-4 max-w-[34ch] leading-relaxed text-muted">
+                <p className="mt-4 max-w-[34ch] leading-relaxed text-ink-soft">
                   An entry is a few sentences and one decision. Written by hand,
                   read once a week, kept for the pattern it makes.
                 </p>
               </div>
 
-              <figure className="border border-rule bg-paper-raised">
-                <figcaption className="flex items-baseline justify-between border-b border-rule px-5 py-3.5 sm:px-7">
-                  <span className="text-[0.8125rem] text-muted">
+              <figure className="glass-panel-elevated relative overflow-hidden rounded-2xl border border-white/10">
+                <figcaption className="flex items-baseline justify-between border-b border-white/10 px-5 py-3.5 sm:px-7">
+                  <span className="text-xs font-medium text-muted-foreground">
                     Tuesday, 12 March
                   </span>
-                  <span className="text-[0.8125rem] text-muted">Entry 214</span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[0.75rem] font-medium text-emerald-300">
+                    Entry 214
+                  </span>
                 </figcaption>
 
-                <dl className="px-5 py-2 sm:px-7">
+                <dl className="px-5 py-3 sm:px-7">
                   <Entry label="logged">
                     Walked to the market instead of driving. Half an hour each way,
                     and the money question sorted itself out on the walk home.
@@ -134,17 +158,19 @@ export function LandingPage() {
                   </Entry>
                 </dl>
 
-                <div className="flex items-center gap-2.5 border-t border-rule px-5 py-3.5 text-[0.8125rem] text-muted sm:px-7">
+                <div className="flex items-center gap-3 border-t border-white/10 bg-white/[0.02] px-5 py-3.5 text-xs text-ink-soft sm:px-7">
                   <span
                     aria-hidden
-                    className="inline-flex size-4 items-center justify-center border border-brass-deep text-brass-deep"
+                    className="inline-flex size-5 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400"
                   >
-                    <svg viewBox="0 0 12 12" className="size-2.5" aria-hidden>
+                    <svg viewBox="0 0 12 12" className="size-3" aria-hidden>
                       <path
-                        d="M1.5 6.5 4.5 9.5 10.5 2.5"
+                        d="M2 6.5 4.5 9 10 3"
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="1.6"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </svg>
                   </span>
@@ -154,11 +180,11 @@ export function LandingPage() {
             </div>
           </section>
 
-          <section className="border-t border-rule py-20 sm:py-24">
-            <p className="max-w-[20ch] font-display text-[clamp(2rem,5.4vw,3.5rem)] font-medium leading-[1.05] tracking-[-0.035em]">
+          <section className="border-t border-white/10 py-20 sm:py-28">
+            <h2 className="max-w-[20ch] font-display text-[clamp(2.25rem,5.4vw,3.75rem)] font-bold leading-[1.05] tracking-[-0.035em] text-foreground">
               One realistic step at a time.
-            </p>
-            <p className="mt-7 max-w-[50ch] leading-relaxed text-muted">
+            </h2>
+            <p className="mt-6 max-w-[50ch] text-lg leading-relaxed text-ink-soft">
               Ambitious plans tend to die in the third week. A logbook survives
               because the next step is always small enough to do tonight, and
               specific enough to know whether it happened.
@@ -167,23 +193,19 @@ export function LandingPage() {
         </main>
       </SiteShell>
 
-      <footer className="mt-4 bg-ink text-paper">
+      <footer className="mt-4 border-t border-white/10 bg-black/40 backdrop-blur-xl text-foreground">
         <div className="mx-auto w-full max-w-[1180px] px-4 py-16 sm:px-8">
           <div className="grid gap-12 pl-7 sm:pl-11 md:grid-cols-[1fr_minmax(0,22rem)] md:pl-20">
             <div>
-              <p className="font-display text-[clamp(1.6rem,4vw,2.4rem)] font-medium leading-[1.1] tracking-[-0.03em]">
+              <p className="font-display text-[clamp(1.75rem,4vw,2.5rem)] font-bold leading-[1.1] tracking-[-0.03em] text-foreground">
                 Start where you are.
               </p>
-              <p className="mt-5 max-w-[42ch] leading-relaxed text-paper/60">
+              <p className="mt-4 max-w-[42ch] leading-relaxed text-ink-soft">
                 Write the first entry tonight. Ten minutes, in plain words. It
                 is the only part that has to be honest.
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-3">
-                <Button
-                  asChild
-                  size="lg"
-                  className="bg-paper text-ink hover:bg-paper-raised"
-                >
+                <Button asChild size="lg">
                   <Link to={signedIn ? '/app' : '/sign-up'}>
                     {signedIn ? 'Open your logbook' : 'Create your logbook'}
                   </Link>
@@ -191,7 +213,7 @@ export function LandingPage() {
                 {!signedIn && (
                   <Link
                     to="/sign-in"
-                    className="px-2 py-2 text-sm text-paper/70 underline-offset-4 transition-colors hover:text-paper hover:underline focus-visible:outline-paper"
+                    className="px-3 py-2 text-sm text-ink-soft underline-offset-4 transition-colors hover:text-foreground hover:underline"
                   >
                     I already keep one
                   </Link>
@@ -200,25 +222,25 @@ export function LandingPage() {
             </div>
 
             <div className="md:pt-2">
-              <p className="text-sm leading-relaxed text-paper/60">
-                QAWIM takes its name from <span lang="ar">قويم</span>, upright —
+              <p className="text-sm leading-relaxed text-ink-soft">
+                QAWIM takes its name from <span lang="ar" className="text-emerald-400 font-medium">قويم</span>, upright —
                 the thing a plumb line checks.
               </p>
               <nav
                 aria-label="Footer"
-                className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-paper/70"
+                className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground"
               >
-                <a href="/#how-it-works" className="py-1 hover:text-paper focus-visible:outline-paper">
+                <a href="/#how-it-works" className="py-1 hover:text-emerald-400 transition-colors">
                   How it works
                 </a>
-                <Link to="/sign-in" className="py-1 hover:text-paper focus-visible:outline-paper">
+                <Link to="/sign-in" className="py-1 hover:text-emerald-400 transition-colors">
                   Sign in
                 </Link>
-                <Link to="/sign-up" className="py-1 hover:text-paper focus-visible:outline-paper">
+                <Link to="/sign-up" className="py-1 hover:text-emerald-400 transition-colors">
                   Start
                 </Link>
               </nav>
-              <p className="mt-8 text-[0.8125rem] text-paper/55">
+              <p className="mt-8 text-xs text-muted-foreground/60">
                 © {new Date().getFullYear()} QAWIM
               </p>
             </div>
@@ -237,9 +259,9 @@ function Entry({
   children: ReactNode
 }) {
   return (
-    <div className="grid gap-1 border-b border-rule/70 py-5 last:border-b-0 sm:grid-cols-[5.5rem_1fr] sm:gap-6">
-      <dt className="text-[0.8125rem] leading-7 text-muted">{label}</dt>
-      <dd className="max-w-[54ch] leading-7 text-ink-soft">{children}</dd>
+    <div className="grid gap-1 border-b border-white/[0.07] py-4 last:border-b-0 sm:grid-cols-[5.5rem_1fr] sm:gap-6">
+      <dt className="text-xs uppercase tracking-wider font-mono text-emerald-400/80 leading-7">{label}</dt>
+      <dd className="max-w-[54ch] leading-7 text-foreground/90">{children}</dd>
     </div>
   )
 }

@@ -2,51 +2,59 @@
 
 /*
   QAWIM — design tokens
-  A surveyor's logbook: mineral paper, pine ink, brass for the one moving part.
+  Dark Obsidian & Emerald Aurora: Glassmorphism, luminous emerald accents, and surveyor precision.
 */
 @theme {
   --font-sans: "Archivo", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-display: "Bitter", Georgia, "Times New Roman", serif;
+  --font-display: "Archivo", ui-sans-serif, system-ui, -apple-system, sans-serif;
 
-  --color-paper: #e3e7e2;
-  --color-paper-raised: #eef1ec;
-  --color-paper-quiet: #d9dfd8;
-  --color-ink: #14201c;
-  --color-ink-soft: #1d2b26;
-  --color-pine: #204a3f;
-  --color-pine-deep: #17362e;
-  --color-brass: #b4883c;
-  --color-brass-deep: #82601f;
-  --color-muted: #4f5c53;
-  --color-rule: #c3cbc1;
-  --color-rule-strong: #a8b3a8;
+  /* Surfaces & Canvas */
+  --color-paper: #070a08;
+  --color-paper-raised: rgba(255, 255, 255, 0.04);
+  --color-paper-quiet: rgba(255, 255, 255, 0.02);
+
+  /* Typography */
+  --color-ink: #f4f7f5;
+  --color-ink-soft: #a7b7ad;
+  --color-muted: #6f8377;
+
+  /* Emerald & Mint Brand Accents */
+  --color-pine: #10b981;
+  --color-pine-deep: #059669;
+  --color-brass: #34d399;
+  --color-brass-deep: #10b981;
+
+  /* Hairline Glass Borders */
+  --color-rule: rgba(255, 255, 255, 0.08);
+  --color-rule-strong: rgba(255, 255, 255, 0.16);
 
   /* shadcn/ui semantic tokens */
-  --color-background: #e3e7e2;
-  --color-foreground: #14201c;
-  --color-primary: #204a3f;
-  --color-primary-foreground: #eef1ec;
-  --color-secondary: #d6dbd3;
-  --color-secondary-foreground: #14201c;
-  --color-accent: #b4883c;
-  --color-accent-foreground: #14201c;
-  --color-muted-foreground: #4f5c53;
-  --color-border: #c3cbc1;
-  --color-input: #a8b3a8;
-  --color-ring: #204a3f;
-  --color-destructive: #8c2f24;
-  --color-destructive-foreground: #f6efec;
+  --color-background: #070a08;
+  --color-foreground: #f4f7f5;
+  --color-primary: #10b981;
+  --color-primary-foreground: #03140b;
+  --color-secondary: rgba(255, 255, 255, 0.06);
+  --color-secondary-foreground: #f4f7f5;
+  --color-accent: #059669;
+  --color-accent-foreground: #f4f7f5;
+  --color-muted-foreground: #7a8e83;
+  --color-border: rgba(255, 255, 255, 0.09);
+  --color-input: rgba(255, 255, 255, 0.12);
+  --color-ring: #10b981;
+  --color-destructive: #f43f5e;
+  --color-destructive-foreground: #ffffff;
 
-  --radius-sm: 2px;
-  --radius-md: 3px;
-  --radius-lg: 4px;
-  --radius-xl: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
 }
 
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
+    color-scheme: dark;
   }
 
   body {
@@ -57,23 +65,44 @@
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    position: relative;
+    min-height: 100vh;
+    overflow-x: hidden;
   }
 
-  /* Printed-paper grain: barely there, but it keeps the surface from reading as flat UI. */
+  /* Ambient glowing aurora light mesh */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse 70% 45% at 50% -8%, rgba(16, 185, 129, 0.18), transparent 70%),
+      radial-gradient(ellipse 50% 35% at 85% 20%, rgba(5, 150, 105, 0.1), transparent 60%),
+      radial-gradient(ellipse 55% 40% at 15% 50%, rgba(20, 184, 166, 0.06), transparent 70%),
+      radial-gradient(ellipse 60% 45% at 50% 100%, rgba(16, 185, 129, 0.08), transparent 70%);
+  }
+
+  /* Subtle micro-texture for tangible depth */
   body::after {
     content: "";
     position: fixed;
     inset: 0;
-    z-index: 60;
+    z-index: 1;
     pointer-events: none;
-    opacity: 0.055;
-    mix-blend-mode: multiply;
+    opacity: 0.035;
+    mix-blend-mode: screen;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   ::selection {
-    background-color: #dfcfa6;
-    color: var(--color-ink);
+    background-color: rgba(16, 185, 129, 0.35);
+    color: #ffffff;
   }
 
   :focus-visible {
@@ -88,20 +117,44 @@
   }
 }
 
+/* Glassmorphic utilities */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+.glass-panel-elevated {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.65), 0 0 25px -5px rgba(16, 185, 129, 0.1);
+}
+
+.glass-pill {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 /*
-  The one axis the whole page hangs from: a hairline with measure ticks in the
-  margin, ending in a brass plumb bob that settles once on load.
+  The modern glowing surveyor's axis: subtle neon measuring ticks
+  ending in a luminous emerald plumb prism.
 */
 .tick-rail {
   background-image:
     repeating-linear-gradient(
       to bottom,
-      color-mix(in oklab, var(--color-rule-strong) 80%, transparent) 0 1px,
+      rgba(16, 185, 129, 0.25) 0 1px,
       transparent 1px 10px
     ),
     repeating-linear-gradient(
       to bottom,
-      var(--color-rule-strong) 0 1px,
+      rgba(255, 255, 255, 0.22) 0 1px,
       transparent 1px 70px
     );
   background-size:
@@ -117,11 +170,12 @@
   position: absolute;
   left: 0;
   bottom: 0;
-  width: 13px;
-  height: 31px;
-  background-color: var(--color-brass);
+  width: 14px;
+  height: 32px;
+  background: linear-gradient(180deg, #34d399 0%, #059669 100%);
   clip-path: polygon(50% 100%, 100% 0, 0 0);
   transform-origin: 50% 0;
+  filter: drop-shadow(0 0 10px rgba(52, 211, 153, 0.65));
   animation: plumb-settle 1500ms cubic-bezier(0.22, 0.9, 0.28, 1) 250ms both;
 }
 
@@ -129,10 +183,12 @@
   content: "";
   position: absolute;
   top: -6px;
-  left: 3.5px;
+  left: 4px;
   width: 6px;
   height: 6px;
-  background-color: var(--color-brass-deep);
+  border-radius: 50%;
+  background-color: #34d399;
+  box-shadow: 0 0 8px #34d399;
 }
 
 @keyframes plumb-settle {

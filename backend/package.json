@@ -12,6 +12,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
     "dotenv": "^18.0.9",
+    "firebase-admin": "^14.5.0",
     "jose": "^6.2.13",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",

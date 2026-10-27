@@ -6,18 +6,22 @@ export function SiteHeader() {
   const { status, signOut } = useAuth()
 
   return (
-    <header className="flex items-center justify-between gap-4 border-b border-rule py-5">
+    <header className="sticky top-4 z-40 my-3 flex items-center justify-between gap-4 rounded-full border border-white/10 bg-white/[0.04] px-5 py-3 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] backdrop-blur-xl sm:px-6">
       <Link
         to="/"
-        className="font-display text-[1.0625rem] font-semibold tracking-[-0.02em] text-ink"
+        className="flex items-center gap-2 font-display text-[1.0625rem] font-semibold tracking-[-0.02em] text-foreground transition-opacity hover:opacity-90"
       >
-        QAWIM
+        <span
+          aria-hidden
+          className="size-2 rounded-full bg-emerald-400 shadow-[0_0_10px_#34d399]"
+        />
+        <span>QAWIM</span>
       </Link>
 
-      <nav aria-label="Main" className="flex items-center gap-2 sm:gap-5">
+      <nav aria-label="Main" className="flex items-center gap-2 sm:gap-4">
         <a
           href="/#how-it-works"
-          className="hidden py-2 text-sm text-muted transition-colors hover:text-ink sm:inline"
+          className="hidden rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-white/[0.06] hover:text-foreground sm:inline-block"
         >
           How it works
         </a>
@@ -26,7 +30,7 @@ export function SiteHeader() {
           <>
             <Link
               to="/app"
-              className="py-2 text-sm text-ink transition-colors hover:text-pine"
+              className="rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-white/[0.06] hover:text-foreground"
             >
               Your logbook
             </Link>
@@ -38,7 +42,7 @@ export function SiteHeader() {
           <>
             <Link
               to="/sign-in"
-              className="px-2 py-2 text-sm text-ink transition-colors hover:text-pine"
+              className="rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-white/[0.06] hover:text-foreground"
             >
               Sign in
             </Link>
